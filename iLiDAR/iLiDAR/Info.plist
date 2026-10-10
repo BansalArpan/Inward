@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+
+    <key>NSCameraUsageDescription</key>
+    <string>iLiDAR uses the camera and LiDAR to capture images, depth, position, and rotation.</string>
+
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>iLiDAR connects to your computer on the same Wi-Fi network to stream camera images, depth, and tracking data.</string>
+
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <false/>
+</dict>
+</plist>
