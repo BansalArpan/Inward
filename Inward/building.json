@@ -1,0 +1,333 @@
+{
+  "version": 4,
+  "units": "m",
+  "gridSize": 100,
+  "pieces": [
+    {
+      "id": "26DF6620-F773-4BCC-A54E-83209762DD01",
+      "kind": "room",
+      "name": "2B06",
+      "x": 90.40000000000002,
+      "z": 31.5,
+      "width": 2,
+      "depth": 3,
+      "doorSide": "bottom",
+      "rotation": -57.99461679191651
+    },
+    {
+      "id": "0BE86F24-2BDA-4ABF-A96A-EBB01CC1E6F4",
+      "kind": "room",
+      "name": "2A01",
+      "x": 97.15,
+      "z": 32.4,
+      "width": 4,
+      "depth": 3,
+      "doorSide": "top",
+      "rotation": -57.994616791916485
+    },
+    {
+      "id": "56C4300F-D1FF-411E-AC9E-EF489921BEA9",
+      "kind": "room",
+      "name": "2B12",
+      "x": 85.7,
+      "z": 39,
+      "width": 2,
+      "depth": 3,
+      "doorSide": "bottom",
+      "rotation": -57.99461679191651
+    },
+    {
+      "id": "DCF1879A-5101-49DF-9D05-C70547458536",
+      "kind": "room",
+      "name": "2B10",
+      "x": 88.3,
+      "z": 34.9,
+      "width": 2,
+      "depth": 3,
+      "doorSide": "bottom",
+      "rotation": -57.99461679191651
+    },
+    {
+      "id": "A9DF9576-682E-4BE5-9F06-45A853977C44",
+      "kind": "room",
+      "name": "2B15",
+      "x": 82.10000000000001,
+      "z": 49.5,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "top",
+      "rotation": 0
+    },
+    {
+      "id": "1168941C-5836-4DBA-A6BD-A1816A3D0907",
+      "kind": "room",
+      "name": "2B19",
+      "x": 73.2,
+      "z": 49.6,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "top",
+      "rotation": 0
+    },
+    {
+      "id": "CCF11371-4607-4432-9BC0-3582AB775FCB",
+      "kind": "room",
+      "name": "2B25",
+      "x": 65.2,
+      "z": 49.6,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "top",
+      "rotation": 0
+    },
+    {
+      "id": "E5C798FF-E18C-404C-BC4E-F5D55D7B6BC6",
+      "kind": "room",
+      "name": "2B29",
+      "x": 57.3,
+      "z": 49.6,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "top",
+      "rotation": 0
+    },
+    {
+      "id": "D97CD028-D270-4D1C-A7BC-91B07F23956D",
+      "kind": "room",
+      "name": "2B33",
+      "x": 49.00000000000001,
+      "z": 49.50000000000001,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "top",
+      "rotation": 0
+    },
+    {
+      "id": "D0962423-08A7-432A-A4C2-8AE1EC67CF50",
+      "kind": "room",
+      "name": "2B37",
+      "x": 41.1,
+      "z": 49.50000000000001,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "top",
+      "rotation": 0
+    },
+    {
+      "id": "5BFE8C24-4A44-4C04-AC24-BE77F18A0DBA",
+      "kind": "room",
+      "name": "2B41",
+      "x": 31.3,
+      "z": 49.6,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "top",
+      "rotation": 0
+    },
+    {
+      "id": "0D742D9A-86F8-42BA-8DCF-71A40D2CC1DD",
+      "kind": "room",
+      "name": "2B47",
+      "x": 21.9,
+      "z": 49.50000000000001,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "top",
+      "rotation": 0
+    },
+    {
+      "id": "F4C29B8F-69D4-4101-9C79-E26A5BF16A18",
+      "kind": "room",
+      "name": "2B51",
+      "x": 12.500000000000002,
+      "z": 49.7,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "top",
+      "rotation": 0
+    },
+    {
+      "id": "AF48BEA9-84AC-4D17-A9A0-82E813A5662A",
+      "kind": "room",
+      "name": "2B22",
+      "x": 70.7,
+      "z": 40.800000000000004,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "bottom",
+      "rotation": 0
+    },
+    {
+      "id": "DD5986B2-77C4-4A5F-8EDA-1EF683E1D530",
+      "kind": "room",
+      "name": "2B24",
+      "x": 62.3,
+      "z": 40.800000000000004,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "bottom",
+      "rotation": 0
+    },
+    {
+      "id": "EFFD438D-1051-4777-B17D-31021B23CACD",
+      "kind": "room",
+      "name": "2B30",
+      "x": 54.1,
+      "z": 40.800000000000004,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "bottom",
+      "rotation": 0
+    },
+    {
+      "id": "F79AD51D-71C2-4700-A87A-BBD34D18C8AB",
+      "kind": "room",
+      "name": "2B36",
+      "x": 42.5,
+      "z": 40.800000000000004,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "bottom",
+      "rotation": 0
+    },
+    {
+      "id": "B173E0CA-7321-4FC5-85AE-330F9DAAC0CA",
+      "kind": "room",
+      "name": "2B40",
+      "x": 30.000000000000004,
+      "z": 40.8,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "bottom",
+      "rotation": 0
+    },
+    {
+      "id": "5E451095-1ECA-4073-B429-A4D7C9BB11BE",
+      "kind": "room",
+      "name": "2B44",
+      "x": 20.000000000000004,
+      "z": 40.800000000000004,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "bottom",
+      "rotation": 0
+    },
+    {
+      "id": "3AFEE5E3-B70E-4E9E-8419-93EAE0519B71",
+      "kind": "room",
+      "name": "2B46",
+      "x": 12.200000000000001,
+      "z": 40.800000000000004,
+      "width": 6,
+      "depth": 5,
+      "doorSide": "bottom",
+      "rotation": 0
+    },
+    {
+      "id": "A953F433-A721-4156-BDB7-0A147AEF4DA5",
+      "kind": "room",
+      "name": "Storage Closet",
+      "x": 47.1,
+      "z": 34.9,
+      "width": 3,
+      "depth": 3,
+      "doorSide": "right",
+      "rotation": 0
+    },
+    {
+      "id": "AE2A8EA4-AE5F-4BF4-A422-D0B05ED6DC23",
+      "kind": "room",
+      "name": "Elevator",
+      "x": 94.10000000000001,
+      "z": 43.800000000000004,
+      "width": 4,
+      "depth": 2,
+      "doorSide": "bottom",
+      "rotation": 0
+    }
+  ],
+  "hallways": [
+    {
+      "id": "A1A047E2-3252-4700-9101-A4C4D54D9AD8",
+      "name": "Hallway 1",
+      "vertices": [
+        {
+          "x": 10.100000000000014,
+          "z": 45.7
+        },
+        {
+          "x": 50.100000000000016,
+          "z": 45.7
+        },
+        {
+          "x": 50.100000000000016,
+          "z": 29.7
+        },
+        {
+          "x": 54.100000000000016,
+          "z": 29.7
+        },
+        {
+          "x": 54.100000000000016,
+          "z": 45.7
+        },
+        {
+          "x": 85.10000000000001,
+          "z": 45.7
+        },
+        {
+          "x": 95.10000000000001,
+          "z": 29.7
+        },
+        {
+          "x": 100.10000000000001,
+          "z": 29.7
+        },
+        {
+          "x": 90.10000000000001,
+          "z": 45.7
+        },
+        {
+          "x": 100.10000000000001,
+          "z": 45.7
+        },
+        {
+          "x": 100.0000000000001,
+          "z": 49.7
+        },
+        {
+          "x": 10.100000000000014,
+          "z": 49.7
+        }
+      ],
+      "doors": [],
+      "openEdges": []
+    },
+    {
+      "id": "FDC6BDD6-864B-41ED-A05A-D32A136CE2F5",
+      "name": "Hallway 2",
+      "vertices": [
+        {
+          "x": 90,
+          "z": 49
+        },
+        {
+          "x": 100,
+          "z": 48.7
+        },
+        {
+          "x": 100.10000000000001,
+          "z": 54.800000000000004
+        },
+        {
+          "x": 90.10000000000001,
+          "z": 54.800000000000004
+        }
+      ],
+      "doors": [],
+      "openEdges": []
+    }
+  ],
+  "boardWidth": 200,
+  "boardDepth": 200
+}

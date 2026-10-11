@@ -1,0 +1,311 @@
+{
+  "version": 1,
+  "units": "m",
+  "building": "Innovation Hall",
+  "floor": "Level 1",
+  "nodes": [
+    {
+      "id": "A",
+      "x": 8,
+      "z": 8
+    },
+    {
+      "id": "B",
+      "x": 18,
+      "z": 8
+    },
+    {
+      "id": "C",
+      "x": 28,
+      "z": 8
+    },
+    {
+      "id": "D",
+      "x": 8,
+      "z": 15
+    },
+    {
+      "id": "E",
+      "x": 18,
+      "z": 15
+    },
+    {
+      "id": "F",
+      "x": 28,
+      "z": 15
+    },
+    {
+      "id": "G",
+      "x": 8,
+      "z": 22
+    },
+    {
+      "id": "H",
+      "x": 18,
+      "z": 22
+    },
+    {
+      "id": "I",
+      "x": 28,
+      "z": 22
+    },
+    {
+      "id": "entry",
+      "x": 4,
+      "z": 15
+    },
+    {
+      "id": "101",
+      "x": 8,
+      "z": 6
+    },
+    {
+      "id": "102",
+      "x": 18,
+      "z": 6
+    },
+    {
+      "id": "103",
+      "x": 28,
+      "z": 6
+    },
+    {
+      "id": "lounge",
+      "x": 8,
+      "z": 24
+    },
+    {
+      "id": "204",
+      "x": 18,
+      "z": 24
+    },
+    {
+      "id": "wc",
+      "x": 28,
+      "z": 24
+    },
+    {
+      "id": "lift",
+      "x": 32,
+      "z": 15
+    },
+    {
+      "id": "garden",
+      "x": 16,
+      "z": 15
+    },
+    {
+      "id": "studio",
+      "x": 20,
+      "z": 15
+    }
+  ],
+  "edges": [
+    [
+      "A",
+      "B"
+    ],
+    [
+      "B",
+      "C"
+    ],
+    [
+      "A",
+      "D"
+    ],
+    [
+      "D",
+      "G"
+    ],
+    [
+      "B",
+      "E"
+    ],
+    [
+      "E",
+      "H"
+    ],
+    [
+      "C",
+      "F"
+    ],
+    [
+      "F",
+      "I"
+    ],
+    [
+      "G",
+      "H"
+    ],
+    [
+      "H",
+      "I"
+    ],
+    [
+      "entry",
+      "D"
+    ],
+    [
+      "101",
+      "A"
+    ],
+    [
+      "102",
+      "B"
+    ],
+    [
+      "103",
+      "C"
+    ],
+    [
+      "lounge",
+      "G"
+    ],
+    [
+      "204",
+      "H"
+    ],
+    [
+      "wc",
+      "I"
+    ],
+    [
+      "lift",
+      "F"
+    ],
+    [
+      "garden",
+      "E"
+    ],
+    [
+      "studio",
+      "E"
+    ]
+  ],
+  "rooms": [
+    {
+      "id": "entry",
+      "name": "Main entrance",
+      "kind": "Entrance",
+      "node": "entry",
+      "rect": [
+        1,
+        12,
+        4,
+        6
+      ]
+    },
+    {
+      "id": "101",
+      "name": "Room 101",
+      "kind": "Classroom",
+      "node": "101",
+      "rect": [
+        4,
+        1,
+        8,
+        5
+      ]
+    },
+    {
+      "id": "102",
+      "name": "Room 102",
+      "kind": "Seminar room",
+      "node": "102",
+      "rect": [
+        14,
+        1,
+        8,
+        5
+      ]
+    },
+    {
+      "id": "103",
+      "name": "Room 103",
+      "kind": "Robotics lab",
+      "node": "103",
+      "rect": [
+        24,
+        1,
+        8,
+        5
+      ]
+    },
+    {
+      "id": "lounge",
+      "name": "Student lounge",
+      "kind": "Lounge",
+      "node": "lounge",
+      "rect": [
+        4,
+        24,
+        8,
+        5
+      ]
+    },
+    {
+      "id": "204",
+      "name": "Room 204",
+      "kind": "Design lab",
+      "node": "204",
+      "rect": [
+        14,
+        24,
+        8,
+        5
+      ]
+    },
+    {
+      "id": "wc",
+      "name": "Restrooms",
+      "kind": "Amenity",
+      "node": "wc",
+      "rect": [
+        24,
+        24,
+        8,
+        5
+      ]
+    },
+    {
+      "id": "lift",
+      "name": "Elevator lobby",
+      "kind": "Elevator",
+      "node": "lift",
+      "rect": [
+        31,
+        12,
+        4,
+        6
+      ]
+    },
+    {
+      "id": "garden",
+      "name": "Indoor garden",
+      "kind": "Quiet space",
+      "node": "garden",
+      "rect": [
+        10,
+        10,
+        6,
+        10
+      ]
+    },
+    {
+      "id": "studio",
+      "name": "Collab studio",
+      "kind": "Meeting space",
+      "node": "studio",
+      "rect": [
+        20,
+        10,
+        6,
+        10
+      ]
+    }
+  ],
+  "demoClosure": [
+    "B",
+    "C"
+  ]
+}

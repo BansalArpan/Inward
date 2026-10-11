@@ -1,0 +1,406 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		000000000000000000000012 /* InwardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000001 /* InwardApp.swift */; };
+		000000000000000000000013 /* NavigationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000002 /* NavigationData.swift */; };
+		000000000000000000000014 /* NavigationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000003 /* NavigationModel.swift */; };
+		000000000000000000000015 /* IndoorSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000004 /* IndoorSceneView.swift */; };
+		000000000000000000000016 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000005 /* ContentView.swift */; };
+		000000000000000000000019 /* navigation.json in Resources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000006 /* navigation.json */; };
+		000000000000000000000022 /* RoutePlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000000000000000000000007 /* RoutePlannerTests.swift */; };
+		7AE54F5A307B8F00007B4B13 /* building.json in Resources */ = {isa = PBXBuildFile; fileRef = 7AE54F59307B8F00007B4B13 /* building.json */; };
+		7AE54F5B307B8F28007B4B13 /* building.json in Sources */ = {isa = PBXBuildFile; fileRef = 7AE54F59307B8F00007B4B13 /* building.json */; };
+		7AE54F67307BA06D007B4B13 /* BuildingEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AE54F66307BA06D007B4B13 /* BuildingEditorView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		00000000000000000000001D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00000000000000000000001C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00000000000000000000001B;
+			remoteInfo = Inward;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		000000000000000000000001 /* InwardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InwardApp.swift; sourceTree = "<group>"; };
+		000000000000000000000002 /* NavigationData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationData.swift; sourceTree = "<group>"; };
+		000000000000000000000003 /* NavigationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationModel.swift; sourceTree = "<group>"; };
+		000000000000000000000004 /* IndoorSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndoorSceneView.swift; sourceTree = "<group>"; };
+		000000000000000000000005 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		000000000000000000000006 /* navigation.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = navigation.json; sourceTree = "<group>"; };
+		000000000000000000000007 /* RoutePlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePlannerTests.swift; sourceTree = "<group>"; };
+		000000000000000000000008 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		000000000000000000000009 /* Inward.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Inward.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		00000000000000000000000A /* InwardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InwardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7AE54F59307B8F00007B4B13 /* building.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = building.json; sourceTree = "<group>"; };
+		7AE54F66307BA06D007B4B13 /* BuildingEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildingEditorView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		000000000000000000000018 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000024 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00000000000000000000000B /* Inward */ = {
+			isa = PBXGroup;
+			children = (
+				7AE54F66307BA06D007B4B13 /* BuildingEditorView.swift */,
+				7AE54F59307B8F00007B4B13 /* building.json */,
+				000000000000000000000001 /* InwardApp.swift */,
+				000000000000000000000002 /* NavigationData.swift */,
+				000000000000000000000003 /* NavigationModel.swift */,
+				000000000000000000000004 /* IndoorSceneView.swift */,
+				000000000000000000000005 /* ContentView.swift */,
+				000000000000000000000006 /* navigation.json */,
+			);
+			path = Inward;
+			sourceTree = "<group>";
+		};
+		00000000000000000000000C /* InwardTests */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000007 /* RoutePlannerTests.swift */,
+			);
+			path = InwardTests;
+			sourceTree = "<group>";
+		};
+		00000000000000000000000D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000009 /* Inward.app */,
+				00000000000000000000000A /* InwardTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00000000000000000000000E = {
+			isa = PBXGroup;
+			children = (
+				00000000000000000000000B /* Inward */,
+				00000000000000000000000C /* InwardTests */,
+				000000000000000000000008 /* README.md */,
+				00000000000000000000000D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		00000000000000000000001B /* Inward */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000011 /* Build configuration list for PBXNativeTarget "Inward" */;
+			buildPhases = (
+				000000000000000000000017 /* Sources */,
+				000000000000000000000018 /* Frameworks */,
+				00000000000000000000001A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Inward;
+			productName = Inward;
+			productReference = 000000000000000000000009 /* Inward.app */;
+			productType = "com.apple.product-type.application";
+		};
+		000000000000000000000026 /* InwardTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000021 /* Build configuration list for PBXNativeTarget "InwardTests" */;
+			buildPhases = (
+				000000000000000000000023 /* Sources */,
+				000000000000000000000024 /* Frameworks */,
+				000000000000000000000025 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				00000000000000000000001E /* PBXTargetDependency */,
+			);
+			name = InwardTests;
+			productName = InwardTests;
+			productReference = 00000000000000000000000A /* InwardTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		00000000000000000000001C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					00000000000000000000001B = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					000000000000000000000026 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 00000000000000000000001B;
+					};
+				};
+			};
+			buildConfigurationList = 000000000000000000000029 /* Build configuration list for PBXProject "Inward" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 00000000000000000000000E;
+			productRefGroup = 00000000000000000000000D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				00000000000000000000001B /* Inward */,
+				000000000000000000000026 /* InwardTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		00000000000000000000001A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000019 /* navigation.json in Resources */,
+				7AE54F5A307B8F00007B4B13 /* building.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000025 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		000000000000000000000017 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7AE54F5B307B8F28007B4B13 /* building.json in Sources */,
+				000000000000000000000012 /* InwardApp.swift in Sources */,
+				000000000000000000000013 /* NavigationData.swift in Sources */,
+				7AE54F67307BA06D007B4B13 /* BuildingEditorView.swift in Sources */,
+				000000000000000000000014 /* NavigationModel.swift in Sources */,
+				000000000000000000000015 /* IndoorSceneView.swift in Sources */,
+				000000000000000000000016 /* ContentView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000023 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000000022 /* RoutePlannerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		00000000000000000000001E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00000000000000000000001B /* Inward */;
+			targetProxy = 00000000000000000000001D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		00000000000000000000000F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C7AAGS2UJG;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shatakshi.Inward;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		000000000000000000000010 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = C7AAGS2UJG;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shatakshi.Inward;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		00000000000000000000001F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.InwardTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Inward.app/Inward";
+			};
+			name = Debug;
+		};
+		000000000000000000000020 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.InwardTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Inward.app/Inward";
+			};
+			name = Release;
+		};
+		000000000000000000000027 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		000000000000000000000028 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		000000000000000000000011 /* Build configuration list for PBXNativeTarget "Inward" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00000000000000000000000F /* Debug */,
+				000000000000000000000010 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000021 /* Build configuration list for PBXNativeTarget "InwardTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00000000000000000000001F /* Debug */,
+				000000000000000000000020 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000029 /* Build configuration list for PBXProject "Inward" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000000027 /* Debug */,
+				000000000000000000000028 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 00000000000000000000001C /* Project object */;
+}
