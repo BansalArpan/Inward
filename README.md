@@ -17,7 +17,7 @@ The repository brings together an iOS LiDAR capture app, a Python receiver and p
 | --- | --- |
 | `iLiDAR/` | iOS app, setup notes, and full tutorial |
 | `iLiDAR/Server/` | TCP receiver, data utilities, and point-cloud preview tools |
-| `pipeline1.ipynb` | Notebook for the reconstruction / training workflow |
+| `3DReconstructionPipeline.ipynb` | Notebook for the reconstruction / training workflow |
 | `RoomAnnotationPipeline.ipynb` | Notebook for room-number image annotation |
 | `preview_point_cloud.py` | Point-cloud preview helper |
 | `ios_driver.py` | Root-level receiver script used by an alternate capture workflow |
@@ -82,7 +82,7 @@ The receiver validates frame metadata and payload sizes before saving. Review th
 ## Processing and exploration
 
 - Use the server utilities to inspect depth data and preview point clouds.
-- Explore `pipeline1.ipynb` for the RGB-D reconstruction and training workflow. Its configuration references local datasets and output directories that you must supply.
+- Explore `3DReconstructionPipeline.ipynb` for the RGB-D reconstruction and training workflow. Its configuration references local datasets and output directories that you must supply.
 - Explore `RoomAnnotationPipeline.ipynb` for room-number detection and annotation from captured RGB frames. The notebook may require a compatible vision model, model access, and GPU resources.
 - Use the notebooks' own setup and configuration sections as the source of truth for their specific inputs and dependencies.
 
