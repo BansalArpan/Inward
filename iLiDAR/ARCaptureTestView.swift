@@ -6,30 +6,27 @@ import CoreImage
 import UIKit
 import simd
 
-private func captureError(_ message: String) -> NSError {
+private func localCaptureError(_ message: String) -> NSError {
     NSError(
-        domain: "iLiDARCapture",
+        domain: "iLiDARLocalCapture",
         code: 1,
         userInfo: [NSLocalizedDescriptionKey: message]
     )
 }
 
-// Copies pixel data without including row padding.
-private func packedData(
+private func copyPackedPixels(
     _ buffer: CVPixelBuffer,
-    expectedFormat: OSType,
+    format: OSType,
     bytesPerPixel: Int
 ) throws -> Data {
-    guard CVPixelBufferGetPixelFormatType(buffer) == expectedFormat else {
-        throw captureError("Unexpected pixel format.")
+    guard CVPixelBufferGetPixelFormatType(buffer) == format,
+          !CVPixelBufferIsPlanar(buffer) else {
+        throw localCaptureError("Unexpected pixel-buffer format.")
     }
 
-    guard !CVPixelBufferIsPlanar(buffer) else {
-        throw captureError("Expected a nonplanar buffer.")
-    }
-
-    guard CVPixelBufferLockBaseAddress(buffer, .readOnly) == kCVReturnSuccess else {
-        throw captureError("Could not lock pixel buffer.")
+    guard CVPixelBufferLockBaseAddress(buffer, .readOnly)
+            == kCVReturnSuccess else {
+        throw localCaptureError("Could not lock pixel buffer.")
     }
 
     defer {
@@ -37,7 +34,7 @@ private func packedData(
     }
 
     guard let base = CVPixelBufferGetBaseAddress(buffer) else {
-        throw captureError("Pixel buffer has no base address.")
+        throw localCaptureError("Pixel buffer has no data.")
     }
 
     let width = CVPixelBufferGetWidth(buffer)
@@ -46,97 +43,79 @@ private func packedData(
     let rowSize = width * bytesPerPixel
 
     guard stride >= rowSize else {
-        throw captureError("Invalid pixel-buffer row size.")
+        throw localCaptureError("Invalid pixel-buffer stride.")
     }
 
-    var result = Data(capacity: rowSize * height)
+    var data = Data(capacity: rowSize * height)
 
     for row in 0..<height {
-        result.append(
+        data.append(
             base.advanced(by: row * stride)
                 .assumingMemoryBound(to: UInt8.self),
             count: rowSize
         )
     }
 
-    return result
+    return data
 }
 
-final class ARCaptureTestController: NSObject, ObservableObject, ARSessionDelegate {
+final class ARCaptureTestController: NSObject,
+    ObservableObject, ARSessionDelegate {
+
     let session = ARSession()
 
-    @Published var status = "Starting ARKit…"
-    @Published var message = "Enter your computer's local IP address."
-    @Published var host = ""
-    @Published var connected = false
+    @Published var status = "Starting camera…"
+    @Published var message = "Ready for local recording."
     @Published var recording = false
-    @Published var busy = false
+    @Published var finishing = false
     @Published var savedFrames = 0
     @Published var droppedFrames = 0
+    @Published var failedFrames = 0
+    @Published var queuedFrames = 0
+    @Published var savedFPS = 0.0
+    @Published var recordingName = ""
 
-    private let stream = ARFrameStreamClient()
-    private var connectionGeneration = 0
-    private var sessionRunning = false
+    private let targetFPS = 30.0
+
+    // Includes the frame currently being written.
+    // Bounds retained camera buffers and memory use.
+    private let maximumQueuedFrames = 3
+
+    private let writer = DispatchQueue(
+        label: "iLiDAR.localWriter",
+        qos: .userInitiated
+    )
+
+    private let imageContext = CIContext()
     private let worldSessionID = UUID().uuidString
 
-    private let writer = DispatchQueue(label: "iLiDAR.frameWriter")
-    private let imageContext = CIContext()
-
-    private var recordingID = ""
+    private var sessionRunning = false
+    private var recordingFolder: URL?
     private var frameID = 0
     private var firstTimestamp: TimeInterval?
-    private var lastCaptureTime: TimeInterval = -.infinity
-    private var lastDisplayTime: TimeInterval = -.infinity
+    private var nextCaptureTimestamp: TimeInterval?
+    private var firstSavedTimestamp: TimeInterval?
+    private var lastSavedTimestamp: TimeInterval?
+    private var lastDisplayTimestamp: TimeInterval = -.infinity
 
-    private let captureInterval: TimeInterval = 0.25
+    private var firstWriteError: String?
+    private var writingSummary = false
+    private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
 
     override init() {
         super.init()
-
         session.delegate = self
         session.delegateQueue = .main
-
-        stream.onState = { [weak self] ready, text in
-            guard let self = self else { return }
-
-            self.connected = ready
-
-            if !ready {
-                self.recording = false
-                UIApplication.shared.isIdleTimerDisabled = false
-            }
-
-            self.message = text
-        }
-    }
-
-    func connect() {
-        guard !busy else { return }
-
-        let address = host.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
-
-        guard !address.isEmpty else {
-            message = "Enter the computer's IP address."
-            return
-        }
-
-        connectionGeneration += 1
-        stream.connect(host: address)
-    }
-
-    func disconnect() {
-        stopRecording()
-        connectionGeneration += 1
-        stream.disconnect()
     }
 
     func startSession() {
         guard !sessionRunning else { return }
 
-        guard ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) else {
-            message = "This device does not support scene depth."
+        guard ARWorldTrackingConfiguration.supportsFrameSemantics(
+            .sceneDepth
+        ) else {
+            status = "LiDAR scene depth is unavailable."
+            message = "Use a supported physical iPhone or iPad."
             return
         }
 
@@ -149,89 +128,222 @@ final class ARCaptureTestController: NSObject, ObservableObject, ARSessionDelega
     }
 
     func pauseSession() {
-        disconnect()
+        stopRecording()
         session.pause()
         sessionRunning = false
     }
 
     func startRecording() {
-        guard connected, !recording, !busy else { return }
+        guard !recording, !finishing, queuedFrames == 0 else {
+            return
+        }
 
         guard let frame = session.currentFrame,
               frame.sceneDepth != nil else {
-            message = "Wait for camera and depth data."
+            message = "Wait until depth is available."
             return
         }
 
         guard case .normal = frame.camera.trackingState else {
-            message = "Wait until tracking is Normal."
+            message = "Wait until tracking is normal."
             return
         }
 
-        recordingID = UUID().uuidString
-        frameID = 0
-        savedFrames = 0
-        droppedFrames = 0
-        firstTimestamp = nil
-        lastCaptureTime = -.infinity
+        do {
+            let documents = FileManager.default.urls(
+                for: .documentDirectory,
+                in: .userDomainMask
+            )[0]
 
-        recording = true
-        UIApplication.shared.isIdleTimerDisabled = true
+            let name = UUID().uuidString
+            let folder = documents
+                .appendingPathComponent(
+                    "Recordings",
+                    isDirectory: true
+                )
+                .appendingPathComponent(
+                    name,
+                    isDirectory: true
+                )
 
-        message = "Streaming to computer: \(recordingID)"
+            try FileManager.default.createDirectory(
+                at: folder,
+                withIntermediateDirectories: true,
+                attributes: nil
+            )
+
+            let initialSummary: [String: Any] = [
+                "recording_id": name,
+                "world_session_id": worldSessionID,
+                "status": "recording",
+                "target_fps": targetFPS
+            ]
+
+            let initialJSON = try JSONSerialization.data(
+                withJSONObject: initialSummary,
+                options: [.prettyPrinted, .sortedKeys]
+            )
+
+            try initialJSON.write(
+                to: folder.appendingPathComponent("recording.json"),
+                options: .atomic
+            )
+
+            recordingFolder = folder
+            recordingName = name
+
+            frameID = 0
+            savedFrames = 0
+            droppedFrames = 0
+            failedFrames = 0
+            queuedFrames = 0
+            savedFPS = 0
+
+            firstTimestamp = nil
+            nextCaptureTimestamp = nil
+            firstSavedTimestamp = nil
+            lastSavedTimestamp = nil
+            firstWriteError = nil
+            writingSummary = false
+
+            recording = true
+            UIApplication.shared.isIdleTimerDisabled = true
+            message = "Recording to this iPhone."
+        } catch {
+            message = "Could not start: \(error.localizedDescription)"
+        }
     }
 
     func stopRecording() {
         guard recording else { return }
 
         recording = false
-        UIApplication.shared.isIdleTimerDisabled = false
+        finishing = true
+        message = "Finishing queued frames…"
 
-        message = busy
-            ? "Waiting for last server acknowledgment…"
-            : "Computer confirmed \(savedFrames) frames."
+        // Request a short amount of background time to finish writes
+        // if the app is moved into the background.
+        if backgroundTask == .invalid {
+            backgroundTask = UIApplication.shared.beginBackgroundTask(
+                withName: "Finish LiDAR recording"
+            ) { [weak self] in
+                self?.endBackgroundTask()
+            }
+        }
+
+        finishIfReady()
     }
 
-    private func trackingInfo(
-        _ state: ARCamera.TrackingState
-    ) -> (name: String, reason: String) {
-        switch state {
-        case .normal:
-            return ("normal", "")
+    private func endBackgroundTask() {
+        guard backgroundTask != .invalid else { return }
 
-        case .notAvailable:
-            return ("unavailable", "")
+        let task = backgroundTask
+        backgroundTask = .invalid
+        UIApplication.shared.endBackgroundTask(task)
+    }
 
-        case .limited(let reason):
-            switch reason {
-            case .initializing:
-                return ("limited", "initializing")
-            case .excessiveMotion:
-                return ("limited", "excessive_motion")
-            case .insufficientFeatures:
-                return ("limited", "insufficient_features")
-            case .relocalizing:
-                return ("limited", "relocalizing")
-            @unknown default:
-                return ("limited", "unknown")
+    private func finishIfReady() {
+        guard finishing,
+              queuedFrames == 0,
+              !writingSummary,
+              let folder = recordingFolder else {
+            return
+        }
+
+        writingSummary = true
+
+        let errorText = firstWriteError
+        let savedCount = savedFrames
+
+        let summary: [String: Any] = [
+            "recording_id": recordingName,
+            "world_session_id": worldSessionID,
+            "status": errorText == nil
+                ? "complete"
+                : "stopped_after_write_error",
+            "target_fps": targetFPS,
+            "saved_frames": savedFrames,
+            "skipped_capture_attempts": droppedFrames,
+            "failed_frames": failedFrames,
+            "average_saved_fps": savedFPS,
+            "first_saved_timestamp_seconds":
+                firstSavedTimestamp ?? 0,
+            "last_saved_timestamp_seconds":
+                lastSavedTimestamp ?? 0,
+            "error": errorText ?? ""
+        ]
+
+        writer.async {
+            var summaryError: String?
+
+            do {
+                let data = try JSONSerialization.data(
+                    withJSONObject: summary,
+                    options: [.prettyPrinted, .sortedKeys]
+                )
+
+                try data.write(
+                    to: folder.appendingPathComponent("recording.json"),
+                    options: .atomic
+                )
+            } catch {
+                summaryError = error.localizedDescription
+            }
+
+            let finalError = summaryError
+
+            DispatchQueue.main.async {
+                self.finishing = false
+                self.writingSummary = false
+                UIApplication.shared.isIdleTimerDisabled = false
+                self.endBackgroundTask()
+
+                if let finalError = finalError {
+                    self.message = """
+                    Frames saved, but summary failed: \(finalError)
+                    """
+                } else if let errorText = errorText {
+                    self.message = """
+                    Stopped: \(errorText)
+                    \(savedCount) completed frames remain on the phone.
+                    """
+                } else {
+                    self.message = """
+                    Ready to transfer: \(savedCount) frames.
+                    Files > On My iPhone > iLiDAR > Recordings
+                    """
+                }
             }
         }
     }
 
-    func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        let tracking = trackingInfo(frame.camera.trackingState)
+    private func trackingName(
+        _ state: ARCamera.TrackingState
+    ) -> String {
+        switch state {
+        case .normal:
+            return "normal"
+        case .limited:
+            return "limited"
+        case .notAvailable:
+            return "unavailable"
+        }
+    }
+
+    func session(
+        _ session: ARSession,
+        didUpdate frame: ARFrame
+    ) {
+        let tracking = trackingName(frame.camera.trackingState)
         let transform = frame.camera.transform
         let position = transform.columns.3
-
-        // ARKit provides Euler angles in radians.
-        // Convert to degrees for the live display.
         let angles = frame.camera.eulerAngles * (180 / Float.pi)
 
-        if frame.timestamp - lastDisplayTime >= 0.25 {
-            lastDisplayTime = frame.timestamp
+        if frame.timestamp - lastDisplayTimestamp >= 0.1 {
+            lastDisplayTimestamp = frame.timestamp
 
             status = """
-            Tracking: \(tracking.name) \(tracking.reason)
+            Tracking: \(tracking)
             X: \(String(format: "%.3f", position.x)) m
             Y: \(String(format: "%.3f", position.y)) m
             Z: \(String(format: "%.3f", position.z)) m
@@ -242,16 +354,33 @@ final class ARCaptureTestController: NSObject, ObservableObject, ARSessionDelega
             """
         }
 
-        guard recording,
-              connected,
-              frame.timestamp - lastCaptureTime >= captureInterval else {
+        guard recording, let folder = recordingFolder else {
             return
         }
 
-        lastCaptureTime = frame.timestamp
+        let interval = 1.0 / targetFPS
+        let deadline = nextCaptureTimestamp ?? frame.timestamp
 
-        // Keep memory bounded while waiting for the receiver.
-        guard !busy, let sceneDepth = frame.sceneDepth else {
+        // Small tolerance avoids skipping due to timestamp rounding.
+        guard frame.timestamp + 0.001 >= deadline else {
+            return
+        }
+
+        var nextDeadline = deadline + interval
+
+        // Do not try to catch up by producing a burst after a pause.
+        if nextDeadline <= frame.timestamp {
+            nextDeadline = frame.timestamp + interval
+        }
+
+        nextCaptureTimestamp = nextDeadline
+
+        // Give every selected capture attempt an ID, including skips.
+        let currentFrameID = frameID
+        frameID += 1
+
+        guard queuedFrames < maximumQueuedFrames,
+              let sceneDepth = frame.sceneDepth else {
             droppedFrames += 1
             return
         }
@@ -260,9 +389,12 @@ final class ARCaptureTestController: NSObject, ObservableObject, ARSessionDelega
             firstTimestamp = frame.timestamp
         }
 
+        // Retain only the buffers needed by this bounded write job.
+        // The worker does not retain the ARFrame itself.
         let rgb = frame.capturedImage
         let depth = sceneDepth.depthMap
         let confidence = sceneDepth.confidenceMap
+        let timestamp = frame.timestamp
         let intrinsics = frame.camera.intrinsics
         let quaternion = simd_quatf(transform)
 
@@ -271,7 +403,6 @@ final class ARCaptureTestController: NSObject, ObservableObject, ARSessionDelega
         let depthWidth = CVPixelBufferGetWidth(depth)
         let depthHeight = CVPixelBufferGetHeight(depth)
 
-        // SIMD uses [column][row]. JSON stores explicit rows.
         let poseRows: [[Float]] = (0..<4).map { row in
             (0..<4).map { column in
                 transform[column][row]
@@ -287,10 +418,10 @@ final class ARCaptureTestController: NSObject, ObservableObject, ARSessionDelega
         var metadata: [String: Any] = [
             "schema_version": 2,
             "world_session_id": worldSessionID,
-            "recording_id": recordingID,
-            "frame_id": frameID,
-            "timestamp_seconds": frame.timestamp,
-            "elapsed_seconds": frame.timestamp - (firstTimestamp ?? frame.timestamp),
+            "recording_id": recordingName,
+            "frame_id": currentFrameID,
+            "timestamp_seconds": timestamp,
+            "elapsed_seconds": timestamp - (firstTimestamp ?? timestamp),
             "timestamp_timebase": "ARFrame monotonic seconds",
             "rgb_file": "rgb.jpg",
             "depth_file": "depth.bin",
@@ -321,12 +452,16 @@ final class ARCaptureTestController: NSObject, ObservableObject, ARSessionDelega
                 quaternion.imag.z,
                 quaternion.real
             ],
+            "rotation_euler_degrees_xyz": [
+                angles.x,
+                angles.y,
+                angles.z
+            ],
             "world_coordinates": "ARKit session-local right-handed, gravity-aligned Y-up",
             "camera_coordinates": "ARKit camera X-right Y-up Z-backward",
             "optical_to_camera_diagonal": [1, -1, -1, 1],
-            "tracking_state": tracking.name,
-            "tracking_reason": tracking.reason,
-            "recommended_for_fusion": tracking.name == "normal"
+            "tracking_state": tracking,
+            "recommended_for_fusion": tracking == "normal"
         ]
 
         if let confidence = confidence {
@@ -337,108 +472,158 @@ final class ARCaptureTestController: NSObject, ObservableObject, ARSessionDelega
             metadata["confidence_levels"] = "0=low, 1=medium, 2=high"
         }
 
-        do {
-            let depthBytes = try packedData(
-                depth,
-                expectedFormat: kCVPixelFormatType_DepthFloat32,
-                bytesPerPixel: 4
+        let frameMetadata = metadata
+        let frameName = String(
+            format: "frame_%06d",
+            currentFrameID
+        )
+
+        queuedFrames += 1
+
+        writer.async {
+            let finalFolder = folder.appendingPathComponent(
+                frameName,
+                isDirectory: true
             )
 
-            let confidenceBytes: Data?
+            let temporaryFolder = folder.appendingPathComponent(
+                ".partial_" + frameName,
+                isDirectory: true
+            )
 
-            if let confidence = confidence {
-                confidenceBytes = try packedData(
-                    confidence,
-                    expectedFormat: kCVPixelFormatType_OneComponent8,
-                    bytesPerPixel: 1
+            var writeError: String?
+
+            do {
+                try autoreleasepool {
+                    let manager = FileManager.default
+
+                    try manager.createDirectory(
+                        at: temporaryFolder,
+                        withIntermediateDirectories: false,
+                        attributes: nil
+                    )
+
+                    let depthData = try copyPackedPixels(
+                        depth,
+                        format: kCVPixelFormatType_DepthFloat32,
+                        bytesPerPixel: 4
+                    )
+
+                    try depthData.write(
+                        to: temporaryFolder.appendingPathComponent(
+                            "depth.bin"
+                        )
+                    )
+
+                    if let confidence = confidence {
+                        let confidenceData = try copyPackedPixels(
+                            confidence,
+                            format: kCVPixelFormatType_OneComponent8,
+                            bytesPerPixel: 1
+                        )
+
+                        try confidenceData.write(
+                            to: temporaryFolder.appendingPathComponent(
+                                "confidence.bin"
+                            )
+                        )
+                    }
+
+                    let image = CIImage(cvPixelBuffer: rgb)
+
+                    guard let cgImage = self.imageContext.createCGImage(
+                        image,
+                        from: image.extent
+                    ),
+                    let jpeg = UIImage(cgImage: cgImage).jpegData(
+                        compressionQuality: 0.8
+                    ) else {
+                        throw localCaptureError(
+                            "Could not encode RGB image."
+                        )
+                    }
+
+                    try jpeg.write(
+                        to: temporaryFolder.appendingPathComponent(
+                            "rgb.jpg"
+                        )
+                    )
+
+                    let json = try JSONSerialization.data(
+                        withJSONObject: frameMetadata,
+                        options: [.sortedKeys]
+                    )
+
+                    try json.write(
+                        to: temporaryFolder.appendingPathComponent(
+                            "metadata.json"
+                        )
+                    )
+
+                    // A visible frame folder appears only when all
+                    // of its files have been written successfully.
+                    try manager.moveItem(
+                        at: temporaryFolder,
+                        to: finalFolder
+                    )
+                }
+            } catch {
+                writeError = error.localizedDescription
+                try? FileManager.default.removeItem(
+                    at: temporaryFolder
                 )
-            } else {
-                confidenceBytes = nil
             }
 
-            let json = try JSONSerialization.data(
-                withJSONObject: metadata,
-                options: [.prettyPrinted, .sortedKeys]
-            )
+            let resultError = writeError
 
-            frameID += 1
-            busy = true
+            DispatchQueue.main.async {
+                self.queuedFrames -= 1
 
-            let generation = connectionGeneration
+                if let resultError = resultError {
+                    self.failedFrames += 1
 
-            // Retain one RGB buffer until encoding finishes.
-            writer.async { [self] in
-                do {
-                    let jpeg: Data = try autoreleasepool {
-                        let image = CIImage(cvPixelBuffer: rgb)
-
-                        guard let cgImage = imageContext.createCGImage(
-                            image,
-                            from: image.extent
-                        ),
-                        let encoded = UIImage(cgImage: cgImage)
-                            .jpegData(compressionQuality: 0.85) else {
-                            throw captureError("Could not encode RGB image.")
-                        }
-
-                        return encoded
+                    if self.firstWriteError == nil {
+                        self.firstWriteError = resultError
                     }
 
-                    DispatchQueue.main.async {
-                        guard self.connectionGeneration == generation,
-                              self.connected else {
-                            self.busy = false
-                            return
-                        }
+                    self.stopRecording()
+                } else {
+                    self.savedFrames += 1
 
-                        self.stream.sendFrame(
-                            json: json,
-                            rgb: jpeg,
-                            depth: depthBytes,
-                            confidence: confidenceBytes
-                        ) { result in
-                            self.busy = false
-
-                            switch result {
-                            case .success:
-                                self.savedFrames += 1
-                                self.message = "Computer confirmed \(self.savedFrames) frames."
-
-                            case .failure(let error):
-                                self.recording = false
-                                UIApplication.shared.isIdleTimerDisabled = false
-                                self.message = error.localizedDescription
-                            }
-                        }
+                    if self.firstSavedTimestamp == nil {
+                        self.firstSavedTimestamp = timestamp
                     }
-                } catch {
-                    let details = error.localizedDescription
 
-                    DispatchQueue.main.async {
-                        self.busy = false
-                        self.recording = false
-                        UIApplication.shared.isIdleTimerDisabled = false
-                        self.message = "Streaming stopped: \(details)"
+                    self.lastSavedTimestamp = timestamp
+
+                    if let first = self.firstSavedTimestamp {
+                        let span = timestamp - first
+
+                        if span > 0 {
+                            self.savedFPS =
+                                Double(self.savedFrames - 1) / span
+                        }
                     }
                 }
+
+                self.finishIfReady()
             }
-        } catch {
-            recording = false
-            UIApplication.shared.isIdleTimerDisabled = false
-            message = "Streaming stopped: \(error.localizedDescription)"
         }
     }
 
     func sessionWasInterrupted(_ session: ARSession) {
         stopRecording()
-        status = "Session interrupted. Start a new recording after recovery."
+        status = "Session interrupted."
     }
 
     func sessionInterruptionEnded(_ session: ARSession) {
-        status = "Session resumed. Wait for Normal tracking."
+        status = "Session resumed. Wait for normal tracking."
     }
 
-    func session(_ session: ARSession, didFailWithError error: Error) {
+    func session(
+        _ session: ARSession,
+        didFailWithError error: Error
+    ) {
         stopRecording()
         status = "ARKit error: \(error.localizedDescription)"
     }
@@ -453,7 +638,10 @@ struct ARCameraPreview: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_ uiView: ARSCNView, context: Context) {}
+    func updateUIView(
+        _ uiView: ARSCNView,
+        context: Context
+    ) {}
 }
 
 struct ARCaptureTestView: View {
@@ -466,43 +654,55 @@ struct ARCaptureTestView: View {
                 .ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 12) {
-                Text(controller.status)
-                    .font(.system(size: 15, design: .monospaced))
-                    .fixedSize(horizontal: false, vertical: true)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(controller.status)
+                            .font(
+                                .system(
+                                    size: 15,
+                                    design: .monospaced
+                                )
+                            )
+                            .fixedSize(
+                                horizontal: false,
+                                vertical: true
+                            )
 
-                Text(
-                    "On computer: \(controller.savedFrames) | Skipped: \(controller.droppedFrames)"
-                )
+                        Text(
+                            "Saved: \(controller.savedFrames) | Skipped: \(controller.droppedFrames)"
+                        )
 
-                Text(controller.message)
-                    .font(.caption)
-                    .lineLimit(6)
+                        Text(
+                            "Queued: \(controller.queuedFrames) | Failed: \(controller.failedFrames)"
+                        )
 
-                HStack {
-                    TextField(
-                        "Computer IP, e.g. 192.168.1.20",
-                        text: $controller.host
-                    )
-                    .keyboardType(.numbersAndPunctuation)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                    .textFieldStyle(.roundedBorder)
-                    .foregroundColor(.black)
-                    .disabled(controller.connected || controller.busy)
+                        Text(
+                            String(
+                                format: "Target: 30 FPS | Saved average: %.1f FPS",
+                                controller.savedFPS
+                            )
+                        )
 
-                    Button(
-                        controller.connected ? "Disconnect" : "Connect"
-                    ) {
-                        if controller.connected {
-                            controller.disconnect()
-                        } else {
-                            controller.connect()
+                        Text(controller.message)
+                            .font(.caption)
+                            .fixedSize(
+                                horizontal: false,
+                                vertical: true
+                            )
+
+                        if !controller.recordingName.isEmpty {
+                            Text(
+                                "Recording: \(controller.recordingName)"
+                            )
+                            .font(.caption2)
+                            .textSelection(.enabled)
                         }
                     }
-                    .disabled(controller.busy && !controller.connected)
+                    .frame(
+                        maxWidth: .infinity,
+                        alignment: .leading
+                    )
                 }
-
-                Spacer()
 
                 Button {
                     if controller.recording {
@@ -512,22 +712,25 @@ struct ARCaptureTestView: View {
                     }
                 } label: {
                     Text(
-                        controller.recording
-                            ? "Stop Streaming"
-                            : "Start Streaming"
+                        controller.finishing
+                            ? "Finishing…"
+                            : (
+                                controller.recording
+                                    ? "Stop Recording"
+                                    : "Start Recording"
+                            )
                     )
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(
-                        controller.recording ? Color.red : Color.blue
+                        controller.recording
+                            ? Color.red
+                            : Color.blue
                     )
                     .cornerRadius(12)
                 }
-                .disabled(
-                    !controller.connected
-                        || (controller.busy && !controller.recording)
-                )
+                .disabled(controller.finishing)
             }
             .foregroundColor(.white)
             .padding()
